@@ -3,42 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/statusquonjc46/fantasy-football-app/internal/api/api.go"
 	"io"
 	"net/http"
 	"os"
-	"strconv"
-	"strings"
 )
-
-type leagueInfo struct {
-	LeagueID string `json:"league_id"`
-	Year     string `json:"year"`
-	V2Api    string `json:"v2Api"`
-	V3Api    string `json:"v3Api"`
-	SWID     string `json:"swid"`
-	S2       string `json:"espn_s2"`
-}
 
 type returnError struct {
 	Error string `json:"error"`
-}
-
-func (l *leagueInfo) formatApiCall() (string, error) {
-	yearAsInt, err := strconv.Atoi(l.Year)
-	if err != nil {
-		return "", fmt.Errorf("[Error] - Failed to convert year from string to int: %w\n", err)
-	}
-
-	var apiReqStr string
-	if yearAsInt < 2018 {
-		apiReqStr = strings.Replace(l.V2Api, "{year}", l.Year, 1)
-		apiReqStr = strings.Replace(apiReqStr, "{leagueid}", l.LeagueID, 1)
-	} else {
-		apiReqStr = strings.Replace(l.V3Api, "{year}", l.Year, 1)
-		apiReqStr = strings.Replace(apiReqStr, "{leagueid}", l.LeagueID, 1)
-	}
-
-	return apiReqStr, nil
 }
 
 func main() {
@@ -59,7 +31,7 @@ func main() {
 	fmt.Println("Enter the espn_s2 Cookie value:")
 	fmt.Scanln(&espnS2)
 
-	league := &leagueInfo{
+	league := &api.leagueInfo{
 		LeagueID: leagueID,
 		Year:     year,
 		V2Api:    "https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/leagueHistory/{leagueid}?seasonId={year}",
